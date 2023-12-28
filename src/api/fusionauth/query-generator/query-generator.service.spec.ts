@@ -6,7 +6,7 @@ describe('QueryGeneratorService', () => {
   const applicationId = "1234-1234-1234-1234";
   const applicationIds = ["1234-1234-1234-1234", "1234-1234-1234-1234"];
   const queryString = "test";
-  
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [QueryGeneratorService],
@@ -49,38 +49,33 @@ describe('QueryGeneratorService', () => {
   })
 
   it('should create queryUsersByApplicationIdAndQueryString query', () => {
-    const result = JSON.stringify({
-      bool: {
-        must: [
-          {
-            bool: {
-              must: [
-                [
-                  {
-                    nested: {
-                      path: "registrations",
-                      query: {
-                        bool: {
-                          should: service.createMatchTags(applicationIds)
-                        }
-                      }
-                    }
-                  }
-                ]
-              ]
-            }
-          },
-          {
-            query_string: {
-              query: queryString
+
+    const result: any = {
+      "bool": {
+        "must": [{
+          "nested": {
+            "path": "registrations",
+            "query": {
+              "bool": {
+                "must": service.createMatchTags(applicationIds)
+              }
             }
           }
-        ]
+        }]
       }
-    })
+    }
+
+    if (queryString) {
+      result.bool.must.push(
+        {
+          "query_string": {
+            "query": queryString
+          }
+        })
+    }
 
     jest.spyOn(service, 'queryUsersByApplicationIdAndQueryString');
-    expect(service.queryUsersByApplicationIdAndQueryString(applicationIds, queryString)).toBe(result);
+    expect(service.queryUsersByApplicationIdAndQueryString(applicationIds, queryString)).toBe(JSON.stringify(result));
 
   })
 });
