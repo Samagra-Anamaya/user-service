@@ -87,6 +87,7 @@ export class AdminController {
   @Get('/searchUser')
   @Roles(
     'Admin',
+    'super_admin_department',
     'school',
     'State Admin',
     'District Admin',
